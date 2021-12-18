@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+// Color Palette
+$theme-dark : rgb(31, 29, 54);
+$theme-semi-dark : rgb(63, 51, 81);
+$theme-semi-light : rgb(134, 72, 121);
+$theme-font : rgb(233, 166, 166);
+
+*, *::before, *::after {
+     box-sizing: border-box;
+     margin: 0;
+     padding: 0;
+     font-family: 'Poppins', sans-serif;
+     color: white;
+}
+
+body, html {
+     font-size: 24px;
+     background-color: $theme-semi-dark;
+}

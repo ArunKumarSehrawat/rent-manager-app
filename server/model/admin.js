@@ -1,4 +1,7 @@
-const express = require("express");
-const router = express.Router();
+const mongoose = require("mongoose");
 
-module.exports = router;
+const adminSchema = new mongoose.Schema({});
+
+const Admin = mongoose.model("Admin", adminSchema);
+
+exports.Admin = Admin;

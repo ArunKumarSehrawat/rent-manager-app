@@ -116,3 +116,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+requests.rest
+sendgrid.env

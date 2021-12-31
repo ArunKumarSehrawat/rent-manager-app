@@ -84,7 +84,7 @@ const Otp = (props) => {
                const {
                     status,
                     data: { message },
-               } = await Axios.post(`https://localhost:3001/register`, {
+               } = await Axios.post(`http://localhost:3001/register`, {
                     OTP,
                     EMAIL: props.email,
                     ROLE: props.role,

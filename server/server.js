@@ -6,16 +6,16 @@ const https = require("https");
 const fs = require("fs");
 const axios = require("axios");
 const { hash, compare } = require("bcrypt");
-const jsonwebtoken = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const lodash = require("lodash");
 const cors = require("cors");
 const sgMail = require("@sendgrid/mail");
 
 /**************** HTTPS SERVER SETUP ******************* */
-const KEY = fs.readFileSync("./key.pem");
-const CERT = fs.readFileSync("./cert.pem");
-const server = https.createServer({ key: KEY, cert: CERT }, app);
+// const KEY = fs.readFileSync("./key.pem");
+// const CERT = fs.readFileSync("./cert.pem");
+// const server = https.createServer({ key: KEY, cert: CERT }, app);
 /*************************************** */
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 /*************************************** */
@@ -42,6 +42,7 @@ const adminRouter = require("./routes/admin");
 const ownerRouter = require("./routes/owner");
 const tenantRouter = require("./routes/tenant");
 const { userInfo } = require("os");
+const { JsonWebTokenError } = require("jsonwebtoken");
 
 // MIDDLEWARES
 app.use("/admin", adminRouter);
@@ -55,8 +56,13 @@ app.use(
           credentials: true,
      })
 );
+// app.use(authenticateToken);
 
 /************************** ROUTES **************************/
+app.get("/", (req, res) => {
+     res.send("GG");
+});
+
 app.post("/register", async (req, res) => {
      let { ROLE, NAME, EMAIL, PHONE, PASSWORD, OTP } = req.body;
 
@@ -84,17 +90,13 @@ app.post("/register", async (req, res) => {
                email: EMAIL,
                phoneNumber: PHONE,
                password: PASSWORD,
-               otp: genOTP(6),
-               // otp: {
-               //      otp: "000000",
-               //      expiration: 321324684352432,
-               // },
+               otp: genOTP(),
           };
 
           try {
                await (ROLE === "owner" ? Owner.create(USER) : Tenant.create(USER));
                // send an otp to user's email
-               if (sendActivationLink(EMAIL, NAME, USER.otp.value))
+               if (sendActivationLink(EMAIL, NAME, USER.otp.otp))
                     // if email was sent successfully
                     return res.status(201).json({
                          message: `Enter OTP sent to ${EMAIL}, to complete the registration process.`,
@@ -111,7 +113,7 @@ app.post("/register", async (req, res) => {
                     });
                }
           } catch (err) {
-               console.log(err);
+               console.log(err.message);
                return res.status(400).json({ message: err });
           }
      } else
@@ -122,10 +124,63 @@ app.post("/register", async (req, res) => {
           });
 });
 
+app.post("/login", async (req, res) => {
+     const authHeader = req.headers.authorization;
+     const token = authHeader && authHeader.split(" ")[1];
+
+     if (token) {
+          try {
+               const tokenIsValid = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+               return tokenIsValid && res.status(200).json({ message: "Authenticated" });
+          } catch (error) {
+               console.log(error.message);
+          }
+     }
+
+     const { EMAIL, PASSWORD } = req.body;
+     if (EMAIL && PASSWORD) {
+          try {
+               const USER = await Owner.findOne({ email: EMAIL });
+               if (USER)
+                    return (await compare(PASSWORD, USER.password))
+                         ? res.status(200).json({
+                                message: "Authenticated",
+                                access_token: jwt.sign(
+                                     {
+                                          role: USER.role,
+                                          email: EMAIL,
+                                     },
+                                     process.env.ACCESS_TOKEN_SECRET,
+                                     { expiresIn: 10 }
+                                ),
+                           })
+                         : res.status(400).json({ message: "Wrong Password" });
+               else return res.status(400).json({ message: "Email does not exists." });
+          } catch (error) {
+               console.log(error.message);
+               return res.status(500).json({ message: "Something went wrong. Please try again later." });
+          }
+     } else return res.status(400).json({ message: "Please fill out all the required fields." });
+});
+
 // LISTENING PORT
-server.listen(3001, () => console.log("Server running on PORT 3001"));
+// server.listen(3001, () => console.log("Server running on PORT 3001"));
+app.listen(3001, () => console.log("Server running on PORT 3001"));
 
 /*********************** FUNCTIONS ***********************/
+function authenticateToken(req, res, next) {
+     const authHeader = req.headers["Authorization"];
+     const token = authHeader && authHeader.split(" ")[1];
+
+     if (!token) return res.status(401).json({ message: "Please login first." });
+     else {
+          jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+               if (err) return res.status(403).json({ message: "Invalid token." });
+               return res.status(200).json({ message: "OK" });
+          });
+     }
+}
+
 async function sendActivationLink(email, name, OTP) {
      try {
           await sgMail.send({
@@ -141,11 +196,13 @@ async function sendActivationLink(email, name, OTP) {
      }
 }
 
-function genOTP(length = 6) {
+function genOTP(length) {
      let otp = "";
-     for (let i = 0; i < length; i++) otp += Math.floor(Math.random() * 10);
-     const expiration = new Date().valueOf() + 1000 * 30; // expiration set to 30 seconds
-     return { otp, expiration };
+     if (length) for (let i = 0; i < length; i++) otp += Math.floor(Math.random() * 10);
+     return {
+          otp: otp ? otp : String(Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000),
+          expiration: new Date().valueOf() + 1000 * 30,
+     };
 }
 
 /* Delete all accounts where the registration process was not completed */

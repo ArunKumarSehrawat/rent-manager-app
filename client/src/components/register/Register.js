@@ -8,7 +8,7 @@ import Input from "./Input";
 import Slider from "./Slider";
 import Otp from "./Otp";
 
-const RegistrationForm = styled.form`
+export const Form = styled.form`
      display: flex;
      flex-direction: column;
      align-items: center;
@@ -43,16 +43,18 @@ const ClientTypeOptions = styled.label`
      transition: opacity 500ms;
 `;
 
-const Heading = styled.h1`
+export const Heading = styled.h1`
      text-align: center;
      margin-block: 1rem;
      font-size: 30px;
+     min-width: 300px;
 `;
 
-const Errors = styled.p`
+export const Errors = styled.p`
      color: orange;
      text-align: center;
      font-size: 16px;
+     min-width: 300px;
 `;
 
 const Register = () => {
@@ -74,7 +76,7 @@ const Register = () => {
           if (validate()) {
                // submit the form
                try {
-                    const { status } = await Axios.post("https://localhost:3001/register", {
+                    const { status } = await Axios.post("http://localhost:3001/register", {
                          ROLE: role,
                          NAME: name,
                          EMAIL: email,
@@ -87,6 +89,7 @@ const Register = () => {
                          setOtpBoxShown(true);
                     }
                } catch (err) {
+                    console.log(err.message);
                     const { message } = err.response.data;
                     if (message.code === 11000) {
                          const value = message.keyValue[Object.keys(message.keyValue)];
@@ -102,6 +105,7 @@ const Register = () => {
           document.getElementById("validation-error").innerText = error;
      };
      const validate = () => {
+          // return true;
           // firstName
           if (isEmpty(name)) {
                showError(`Name can't be empty.`);
@@ -159,22 +163,22 @@ const Register = () => {
                {otpBoxShown && <Otp email={email} role={role} onOtpValidate={handleOtpValidation} />}
                <Heading>Register</Heading>
 
-               <ClientType>
-                    <ClientTypeOptions style={{ opacity: `${role === "tenant" ? 1 : 0.5}` }}>
-                         I need a space
-                    </ClientTypeOptions>
-                    <Slider
-                         name="clientType"
-                         id="clientType"
-                         checked={role === "owner" ? true : false}
-                         onChange={handleClientTypeChange}
-                    />
-                    <ClientTypeOptions style={{ opacity: `${role === "owner" ? 1 : 0.5}` }}>
-                         I own a space
-                    </ClientTypeOptions>
-               </ClientType>
+               <Form>
+                    <ClientType>
+                         <ClientTypeOptions style={{ opacity: `${role === "tenant" ? 1 : 0.5}` }}>
+                              I need a space
+                         </ClientTypeOptions>
+                         <Slider
+                              name="clientType"
+                              id="clientType"
+                              checked={role === "owner" ? true : false}
+                              onChange={handleClientTypeChange}
+                         />
+                         <ClientTypeOptions style={{ opacity: `${role === "owner" ? 1 : 0.5}` }}>
+                              I own a space
+                         </ClientTypeOptions>
+                    </ClientType>
 
-               <RegistrationForm>
                     <Input
                          id="name"
                          type="text"
@@ -225,7 +229,7 @@ const Register = () => {
                     <SubmitButton type="submit" onClick={handleRegisterSubmit}>
                          Create an account
                     </SubmitButton>
-               </RegistrationForm>
+               </Form>
           </>
      );
 };

@@ -8,19 +8,48 @@ import Dashboard from "./components/dashboard/Dashboard";
 
 const App = (props) => {
      return (
-          <>
-               <Navbar />
-               <Router>
-                    <Routes>
-                         <Route path="/" element={<HomePage />} />
-                         <Route path="/login" element={<Login />} />
-                         <Route path="/register" element={<Register />} />
-                         <Route path="/contact" element={<Contact />} />
-                         <Route path="/dashboard" element={<Dashboard />} />
-                         <Route path="*" element={<h1>404 not found</h1>} />
-                    </Routes>
-               </Router>
-          </>
+          <Router>
+               <Routes>
+                    <Route
+                         path="/"
+                         element={
+                              <>
+                                   <Navbar />
+                                   <HomePage />
+                              </>
+                         }
+                    />
+                    <Route
+                         path="/login"
+                         element={
+                              <>
+                                   <Navbar />
+                                   <Login />
+                              </>
+                         }
+                    />
+                    <Route
+                         path="/register"
+                         element={
+                              <>
+                                   <Navbar />
+                                   <Register />
+                              </>
+                         }
+                    />
+                    <Route
+                         path="/contact"
+                         element={
+                              <>
+                                   <Navbar />
+                                   <Contact />
+                              </>
+                         }
+                    />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="*" element={<h1>404 not found</h1>} />
+               </Routes>
+          </Router>
      );
 };
 

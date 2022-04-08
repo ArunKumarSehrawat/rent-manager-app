@@ -27,8 +27,7 @@ const Login = () => {
 
                     try {
                          const response = await instance();
-                         if (response.status === 200 && response.data.message === "Authenticated")
-                              navigate("/dashboard");
+                         if (response.status === 200 && response.data.message === "Authenticated") navigate("/dashboard");
                     } catch (error) {
                          console.log(error.message);
                     }
@@ -51,20 +50,18 @@ const Login = () => {
                     });
 
                     if (response.status === 201 || response.status === 200) {
-                         console.log(response.data);
                          cookies.set("access_token", response.data["access_token"], { path: "/" });
                          navigate("/dashboard");
                     }
                } catch (err) {
-                    const { message } = err.response.data;
-                    showError(`${message}`);
-                    // console.log(err.response);
+                    // const { message } = err.response.data;
+                    // showError(`${message}`);
+                    showError(`${err.response.data.message}`);
+                    // console.log(err);
                }
           }
      };
-     const showError = (error) => {
-          document.getElementById("validation-error").innerText = error;
-     };
+     const showError = (error) => (document.getElementById("validation-error").innerText = error);
      const validate = () => {
           // return true;
           // email
@@ -99,28 +96,8 @@ const Login = () => {
           <>
                <Heading>Login</Heading>
                <Form>
-                    <Input
-                         id="email"
-                         type="text"
-                         value={email}
-                         name="email"
-                         onChange={handleEmailChange}
-                         placeholder="Email"
-                         required="true"
-                         minLength="1"
-                         maxLength="100"
-                    />
-                    <Input
-                         id="password"
-                         type="password"
-                         value={password}
-                         name="password"
-                         onChange={handlePasswordChange}
-                         placeholder="Password"
-                         required="true"
-                         minLength="8"
-                         maxLength="64"
-                    />
+                    <Input id="email" type="text" value={email} name="email" onChange={handleEmailChange} placeholder="Email" required="true" minLength="1" maxLength="100" />
+                    <Input id="password" type="password" value={password} name="password" onChange={handlePasswordChange} placeholder="Password" required="true" minLength="8" maxLength="64" />
                     <Errors id="validation-error"></Errors>
                     <SubmitButton type="submit" onClick={handleLoginSubmit}>
                          Login

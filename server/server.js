@@ -56,12 +56,17 @@ app.use(
           credentials: true,
      })
 );
+// app.use(express.static(__dirname + "/build"));
+
 // app.use(authenticateToken);
 
 /************************** ROUTES **************************/
-app.get("/", (req, res) => {
-     res.send("GG");
-});
+// app.get("/", (req, res) => {
+//      res.sendFile("index");
+// });
+// app.get("/login", (req, res) => {
+//      res.sendFile("index");
+// });
 
 app.post("/register", async (req, res) => {
      let { ROLE, NAME, EMAIL, PHONE, PASSWORD, OTP } = req.body;
@@ -151,7 +156,7 @@ app.post("/login", async (req, res) => {
                                           email: EMAIL,
                                      },
                                      process.env.ACCESS_TOKEN_SECRET,
-                                     { expiresIn: 10 }
+                                     { expiresIn: 86400 }
                                 ),
                            })
                          : res.status(400).json({ message: "Wrong Password" });

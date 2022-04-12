@@ -1,5 +1,36 @@
+import { Link, Outlet } from "react-router-dom";
 import styled from "styled-components";
 import { GlobalStyles } from "../GlobalStyles";
+
+const Navbar = () => {
+     return (
+          <>
+               <NavbarWrapper>
+                    <NavbarHome href="/">Manage MySpace</NavbarHome>
+                    <NavbarLinks>
+                         <li>
+                              <Link to="/">Home</Link>
+                         </li>
+                         <li>
+                              <Link to="/contact">Contact Us</Link>
+                         </li>
+                         <li>
+                              <Link to="/login">Login</Link>
+                         </li>
+                         <li>
+                              <Link to="/register">Register</Link>
+                         </li>
+                         <li>
+                              <Link to="/dashboard">Dashboard</Link>
+                         </li>
+                    </NavbarLinks>
+               </NavbarWrapper>
+               <Outlet />
+          </>
+     );
+};
+
+export default Navbar;
 
 const NavbarWrapper = styled.nav`
      display: flex;
@@ -63,27 +94,3 @@ const NavbarLinks = styled.ul`
           width: 50%;
      }
 `;
-
-const Navbar = () => {
-     return (
-          <NavbarWrapper>
-               <NavbarHome href="/">Manage MySpace</NavbarHome>
-               <NavbarLinks>
-                    <li>
-                         <a href="/">Home</a>
-                    </li>
-                    <li>
-                         <a href="/contact">Contact Us</a>
-                    </li>
-                    <li>
-                         <a href="/login">Login</a>
-                    </li>
-                    <li>
-                         <a href="/register">Register</a>
-                    </li>
-               </NavbarLinks>
-          </NavbarWrapper>
-     );
-};
-
-export default Navbar;

@@ -1,5 +1,7 @@
 import Axios from "axios";
 import { useState } from "react";
+import store from "../../redux/store";
+import * as ACTIONS from "../../redux/actionTypes";
 import styled from "styled-components";
 import { isEmpty, isEmail, isMobilePhone, isStrongPassword } from "validator";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +9,7 @@ import { GlobalStyles } from "../../GlobalStyles";
 import Input from "./Input";
 import Slider from "./Slider";
 import Otp from "./Otp";
+import { useSelector } from "react-redux";
 
 export const Form = styled.form`
      display: flex;
@@ -59,21 +62,48 @@ export const Errors = styled.p`
 
 const Register = () => {
      const navigate = useNavigate();
-     const [role, setRole] = useState("owner");
-     const [name, setName] = useState("");
-     const [email, setEmail] = useState("");
-     const [phoneNumber, setPhoneNumber] = useState("");
-     const [password, setPassword] = useState("");
+     const role = useSelector((state) => state.register.role);
+     const name = useSelector((state) => state.register.name);
+     const email = useSelector((state) => state.register.email);
+     const phoneNumber = useSelector((state) => state.register.phoneNumber);
+     const password = useSelector((state) => state.register.password);
      const [otpBoxShown, setOtpBoxShown] = useState(false);
 
-     const handleClientTypeChange = (e) => (e.target.checked ? setRole("owner") : setRole("tenant"));
-     const handleNameChange = (e) => setName(e.target.value);
-     const handleEmailChange = (e) => setEmail(e.target.value);
-     const handlePhoneNumberChange = (e) => setPhoneNumber(e.target.value);
-     const handlePasswordChange = (e) => setPassword(e.target.value);
+     const handleClientTypeChange = (e) => {
+          store.dispatch({
+               type: ACTIONS.REGISTER_ROLE_UPDATED,
+               payload: { role: e.target.checked ? "owner" : "tenant" },
+          });
+     };
+     const handleNameChange = (e) => {
+          store.dispatch({
+               type: ACTIONS.REGISTER_NAME_UPDATED,
+               payload: { name: e.target.value },
+          });
+     };
+     const handleEmailChange = (e) => {
+          store.dispatch({
+               type: ACTIONS.REGISTER_EMAIL_UPDATED,
+               payload: { email: e.target.value },
+          });
+     };
+     const handlePhoneNumberChange = (e) => {
+          store.dispatch({
+               type: ACTIONS.REGISTER_PHONE_NUMBER_UPDATED,
+               payload: { phoneNumber: e.target.value },
+          });
+     };
+     const handlePasswordChange = (e) => {
+          store.dispatch({
+               type: ACTIONS.REGISTER_PASSWORD_UPDATED,
+               payload: { password: e.target.value },
+          });
+     };
+
      const handleRegisterSubmit = async (e) => {
           e.preventDefault();
           if (validate()) {
+               // if (false) {
                // submit the form
                try {
                     const { status } = await Axios.post("http://localhost:3001/register", {
@@ -165,42 +195,13 @@ const Register = () => {
 
                <Form>
                     <ClientType>
-                         <ClientTypeOptions style={{ opacity: `${role === "tenant" ? 1 : 0.5}` }}>
-                              I need a space
-                         </ClientTypeOptions>
-                         <Slider
-                              name="clientType"
-                              id="clientType"
-                              checked={role === "owner" ? true : false}
-                              onChange={handleClientTypeChange}
-                         />
-                         <ClientTypeOptions style={{ opacity: `${role === "owner" ? 1 : 0.5}` }}>
-                              I own a space
-                         </ClientTypeOptions>
+                         <ClientTypeOptions style={{ opacity: `${role === "tenant" ? 1 : 0.5}` }}>I need a space</ClientTypeOptions>
+                         <Slider name="clientType" id="clientType" checked={role === "owner" ? true : false} onChange={handleClientTypeChange} />
+                         <ClientTypeOptions style={{ opacity: `${role === "owner" ? 1 : 0.5}` }}>I own a space</ClientTypeOptions>
                     </ClientType>
 
-                    <Input
-                         id="name"
-                         type="text"
-                         value={name}
-                         name="name"
-                         onChange={handleNameChange}
-                         placeholder="Name"
-                         required="true"
-                         minLength="1"
-                         maxLength="100"
-                    />
-                    <Input
-                         id="email"
-                         type="email"
-                         value={email}
-                         name="email"
-                         onChange={handleEmailChange}
-                         placeholder="Email"
-                         required="true"
-                         minLength="5"
-                         maxLength="100"
-                    />
+                    <Input id="name" type="text" value={name} name="name" onChange={handleNameChange} placeholder="Name" required="true" minLength="1" maxLength="100" />
+                    <Input id="email" type="email" value={email} name="email" onChange={handleEmailChange} placeholder="Email" required="true" minLength="5" maxLength="100" />
                     <Input
                          id="phoneNumber"
                          type="tel"
@@ -212,17 +213,7 @@ const Register = () => {
                          minLength="10"
                          maxLength="10"
                     />
-                    <Input
-                         id="password"
-                         type="password"
-                         value={password}
-                         name="password"
-                         onChange={handlePasswordChange}
-                         placeholder="Password"
-                         required="true"
-                         minLength="8"
-                         maxLength="64"
-                    />
+                    <Input id="password" type="password" value={password} name="password" onChange={handlePasswordChange} placeholder="Password" required="true" minLength="8" maxLength="64" />
 
                     <Errors id="validation-error"></Errors>
 

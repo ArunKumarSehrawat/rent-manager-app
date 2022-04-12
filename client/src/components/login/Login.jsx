@@ -1,5 +1,8 @@
 import Axios from "axios";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import store from "../../redux/store";
+import * as ACTIONS from "../../redux/actionTypes";
 // import styled from "styled-components";
 import { isEmpty, isEmail, isStrongPassword } from "validator";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +16,9 @@ import { Errors } from "../register/Register";
 const cookies = new Cookies();
 
 const Login = () => {
+     const email = useSelector((state) => state.login.email);
+     const password = useSelector((state) => state.login.password);
+
      useEffect(() => {
           (async function () {
                const token = cookies.get("access_token");
@@ -35,15 +41,19 @@ const Login = () => {
           })();
      });
      const navigate = useNavigate();
-     const [email, setEmail] = useState("arunksehrawat@gmail.com");
-     const [password, setPassword] = useState("xperiaz1");
-     const handleEmailChange = (e) => setEmail(e.target.value);
-     const handlePasswordChange = (e) => setPassword(e.target.value);
+     const handleEmailChange = (e) => {
+          store.dispatch({ type: ACTIONS.LOGIN_EMAIL_UPDATED, payload: { email: e.target.value } });
+     };
+     const handlePasswordChange = (e) => {
+          store.dispatch({ type: ACTIONS.LOGIN_PASSWORD_UPDATED, payload: { password: e.target.value } });
+     };
      const handleLoginSubmit = async (e) => {
+          console.log(store.getState());
           e.preventDefault();
           if (validate()) {
                // submit the form
                try {
+                    const { email, password } = store.getState().login;
                     const response = await Axios.post("http://localhost:3001/login", {
                          EMAIL: email,
                          PASSWORD: password,
@@ -63,6 +73,7 @@ const Login = () => {
      };
      const showError = (error) => (document.getElementById("validation-error").innerText = error);
      const validate = () => {
+          const { email, password } = store.getState().login;
           // return true;
           // email
           if (isEmpty(email)) {
@@ -96,8 +107,8 @@ const Login = () => {
           <>
                <Heading>Login</Heading>
                <Form>
-                    <Input id="email" type="text" value={email} name="email" onChange={handleEmailChange} placeholder="Email" required="true" minLength="1" maxLength="100" />
-                    <Input id="password" type="password" value={password} name="password" onChange={handlePasswordChange} placeholder="Password" required="true" minLength="8" maxLength="64" />
+                    <Input id="email" value={email} type="text" name="email" onChange={handleEmailChange} placeholder="Email" required="true" minLength="1" maxLength="100" />
+                    <Input id="password" value={password} type="password" name="password" onChange={handlePasswordChange} placeholder="Password" required="true" minLength="8" maxLength="64" />
                     <Errors id="validation-error"></Errors>
                     <SubmitButton type="submit" onClick={handleLoginSubmit}>
                          Login

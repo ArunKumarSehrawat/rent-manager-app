@@ -14,7 +14,7 @@ const OtpWrapper = styled.div`
      width: clamp(300px, 50vw, 500px);
      background-color: ${GlobalStyles.themeDark};
      z-index: 100;
-     border-radius: 20px;
+     border-radius: 10px;
      padding: 1rem;
 
      display: flex;
@@ -23,10 +23,10 @@ const OtpWrapper = styled.div`
      align-items: center;
 
      h1 {
-          font-size: 25px;
+          font-size: 1.5rem;
      }
      p {
-          font-size: 14px;
+          font-size: 1rem;
      }
 `;
 
@@ -129,73 +129,12 @@ const Otp = (props) => {
                               An OTP was sent to <strong>{props.email}</strong>, and is valid for 10 minutes.
                          </p>
                          <OtpInputs id="otpInputGroup">
-                              <input
-                                   id="0"
-                                   name="otp1"
-                                   type="tel"
-                                   minLength="1"
-                                   maxLength="1"
-                                   placeholder="0"
-                                   value={otpValue[0]}
-                                   onChange={handleOtpChange}
-                                   required={true}
-                                   autoFocus={true}
-                              />
-                              <input
-                                   id="1"
-                                   name="otp2"
-                                   type="tel"
-                                   minLength="1"
-                                   maxLength="1"
-                                   placeholder="0"
-                                   value={otpValue[1]}
-                                   onChange={handleOtpChange}
-                                   required={true}
-                              />
-                              <input
-                                   id="2"
-                                   name="otp3"
-                                   type="tel"
-                                   minLength="1"
-                                   maxLength="1"
-                                   placeholder="0"
-                                   value={otpValue[2]}
-                                   onChange={handleOtpChange}
-                                   required={true}
-                              />
-                              <input
-                                   id="3"
-                                   name="otp4"
-                                   type="tel"
-                                   minLength="1"
-                                   maxLength="1"
-                                   placeholder="0"
-                                   value={otpValue[3]}
-                                   onChange={handleOtpChange}
-                                   required={true}
-                              />
-                              <input
-                                   id="4"
-                                   name="otp5"
-                                   type="tel"
-                                   minLength="1"
-                                   maxLength="1"
-                                   placeholder="0"
-                                   value={otpValue[4]}
-                                   onChange={handleOtpChange}
-                                   required={true}
-                              />
-                              <input
-                                   id="5"
-                                   name="otp6"
-                                   type="tel"
-                                   minLength="1"
-                                   maxLength="1"
-                                   placeholder="0"
-                                   value={otpValue[5]}
-                                   onChange={handleOtpChange}
-                                   required={true}
-                              />
+                              <input id="0" name="otp1" type="tel" minLength="1" maxLength="1" placeholder="0" value={otpValue[0]} onChange={handleOtpChange} required={true} autoFocus={true} />
+                              <input id="1" name="otp2" type="tel" minLength="1" maxLength="1" placeholder="0" value={otpValue[1]} onChange={handleOtpChange} required={true} />
+                              <input id="2" name="otp3" type="tel" minLength="1" maxLength="1" placeholder="0" value={otpValue[2]} onChange={handleOtpChange} required={true} />
+                              <input id="3" name="otp4" type="tel" minLength="1" maxLength="1" placeholder="0" value={otpValue[3]} onChange={handleOtpChange} required={true} />
+                              <input id="4" name="otp5" type="tel" minLength="1" maxLength="1" placeholder="0" value={otpValue[4]} onChange={handleOtpChange} required={true} />
+                              <input id="5" name="otp6" type="tel" minLength="1" maxLength="1" placeholder="0" value={otpValue[5]} onChange={handleOtpChange} required={true} />
                          </OtpInputs>
                          <SubmitButton form="otpInputContainer" type="submit" onClick={handleOtpSubmit}>
                               Verify OTP

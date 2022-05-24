@@ -20,9 +20,6 @@ const Navbar = () => {
                          <li>
                               <Link to="/register">Register</Link>
                          </li>
-                         <li>
-                              <Link to="/dashboard">Dashboard</Link>
-                         </li>
                     </NavbarLinks>
                </NavbarWrapper>
                <Outlet />
@@ -45,7 +42,7 @@ const NavbarWrapper = styled.nav`
      background-color: ${GlobalStyles.themeDark};
      min-width: 300px;
 
-     @media (max-width: 700px) {
+     @media (max-width: 720px) {
           justify-content: center;
      }
 `;
@@ -53,7 +50,7 @@ const NavbarWrapper = styled.nav`
 const NavbarHome = styled.a`
      text-decoration: none;
      color: ${GlobalStyles.themeFont};
-     font-size: 30px;
+     font-size: 2rem;
      width: max-content;
 `;
 
@@ -61,8 +58,9 @@ const NavbarLinks = styled.ul`
      display: flex;
      flex-wrap: wrap;
      justify-content: center;
-     gap: 1rem;
+     gap: 2rem;
      list-style-type: none;
+     font-size: 1.25rem;
 
      a {
           text-decoration: none;

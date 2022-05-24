@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
-const { hash } = require("bcrypt");
+import mongoose from "mongoose";
+import validator from "validator";
+import { hash } from "bcrypt";
 
 const ownerSchema = new mongoose.Schema({
      role: {
@@ -16,7 +16,6 @@ const ownerSchema = new mongoose.Schema({
           trim: true,
           validate: {
                validator: function (name) {
-                    // return validator.isAlphanumeric(name);
                     return !/[^a-zA-z0-9 _]/.test(name);
                },
                message: "Name should only contain alpha-numeric characters [a-z][A-Z][0-9] SPACE UNDERSCORE",
@@ -41,6 +40,7 @@ const ownerSchema = new mongoose.Schema({
           required: [true, "Email is required."],
           maxlength: [100, "Email is too long."],
           minlength: [5, "Email is too short."],
+          lowercase: true,
           trim: true,
           unique: [true, "Email is already registered."],
           validate: {
@@ -69,13 +69,39 @@ const ownerSchema = new mongoose.Schema({
                message: "Password is weak.",
           },
      },
+     parameters: {
+          type: Object,
+          default: {
+               spaceID: {
+                    optional: false,
+                    type: String,
+               },
+               tenantsName: {
+                    optional: false,
+                    type: String,
+               },
+               rent: {
+                    optional: false,
+                    type: Number,
+               },
+               misc: {
+                    optional: true,
+                    type: Number,
+               },
+          },
+     },
+     years: {
+          type: Object,
+          default: {},
+     },
      createdAt: {
-          type: String,
-          default: new Date().toString(),
+          type: Date,
+          immutable: true,
+          default: () => new Date().toString(),
      },
      updatedAt: {
-          type: String,
-          default: new Date().toString(),
+          type: Date,
+          default: () => new Date().toString(),
      },
      locked: {
           type: Boolean,
@@ -87,6 +113,10 @@ const ownerSchema = new mongoose.Schema({
      },
      otp: {
           type: Object,
+          default: {
+               otp: "",
+               expiration: 0,
+          },
      },
 });
 
@@ -96,6 +126,4 @@ ownerSchema.pre("save", async function (next) {
      next();
 });
 
-const Owner = mongoose.model("Owner", ownerSchema);
-
-exports.Owner = Owner;
+export const Owner = mongoose.model("Owner", ownerSchema);

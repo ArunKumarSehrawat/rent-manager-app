@@ -7,7 +7,9 @@
 export const GlobalStyles = {
      themeDark: `rgb(31, 29, 54)`,
      themeSemiDark: `rgb(63, 51, 81)`,
-     themeSemiLight: `rgb(134, 72, 121)`,
+     // themeSemiLight: `rgb(134, 72, 121)`,
+     themeSemiLight: `hotpink`,
+     // themeSemiLight: `rgb(255, 105, 180)`,
      // themeFont: `rgb(233, 166, 166)`,
      themeFont: `rgb(238, 238, 238)`,
 };

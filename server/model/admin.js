@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const adminSchema = new mongoose.Schema({});
 
-const Admin = mongoose.model("Admin", adminSchema);
-
-exports.Admin = Admin;
+export const Admin = mongoose.model("Admin", adminSchema);

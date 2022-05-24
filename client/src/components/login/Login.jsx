@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import store from "../../redux/store";
 import * as ACTIONS from "../../redux/actionTypes";
-// import styled from "styled-components";
 import { isEmpty, isEmail, isStrongPassword } from "validator";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie/es6";
@@ -18,62 +17,60 @@ const cookies = new Cookies();
 const Login = () => {
      const email = useSelector((state) => state.login.email);
      const password = useSelector((state) => state.login.password);
+     const navigate = useNavigate();
+     const token = cookies.get("accessToken");
 
      useEffect(() => {
           (async function () {
-               const token = cookies.get("access_token");
                if (token) {
-                    const instance = Axios.create({
-                         method: "POST",
-                         baseURL: "http://localhost:3001/login",
-                         headers: {
-                              authorization: `BEARER ${token}`,
-                         },
-                    });
-
                     try {
-                         const response = await instance();
-                         if (response.status === 200 && response.data.message === "Authenticated") navigate("/dashboard");
+                         const response = await Axios({
+                              method: "post",
+                              headers: { authorization: `Bearer ${token}` },
+                              url: "http://localhost:3001/login",
+                         });
+                         if (response.status === 200 && response.data.message === "Authenticated") {
+                              navigate("/dashboard");
+                         }
                     } catch (error) {
                          console.log(error.message);
                     }
                }
           })();
-     });
-     const navigate = useNavigate();
+          // eslint-disable-next-line
+     }, []);
+
      const handleEmailChange = (e) => {
-          store.dispatch({ type: ACTIONS.LOGIN_EMAIL_UPDATED, payload: { email: e.target.value } });
+          store.dispatch({ type: ACTIONS.LOGIN.EMAIL_UPDATED, payload: { email: e.target.value } });
      };
      const handlePasswordChange = (e) => {
-          store.dispatch({ type: ACTIONS.LOGIN_PASSWORD_UPDATED, payload: { password: e.target.value } });
+          store.dispatch({ type: ACTIONS.LOGIN.PASSWORD_UPDATED, payload: { password: e.target.value } });
      };
      const handleLoginSubmit = async (e) => {
-          console.log(store.getState());
           e.preventDefault();
           if (validate()) {
                // submit the form
                try {
-                    const { email, password } = store.getState().login;
                     const response = await Axios.post("http://localhost:3001/login", {
                          EMAIL: email,
                          PASSWORD: password,
                     });
 
                     if (response.status === 201 || response.status === 200) {
-                         cookies.set("access_token", response.data["access_token"], { path: "/" });
-                         navigate("/dashboard");
+                         cookies.set("accessToken", response.data.user.accessToken, { path: "/" });
+                         const { user } = response.data;
+                         store.dispatch({ type: ACTIONS.USER.LOGGED_IN, payload: { user } });
+                         navigate("/dashboard/home");
                     }
                } catch (err) {
-                    // const { message } = err.response.data;
-                    // showError(`${message}`);
-                    showError(`${err.response.data.message}`);
-                    // console.log(err);
+                    console.log(err.toJSON());
+                    if (err?.message === "Network Error") return showError("Couldn't connect to server. Please try again later.");
+                    else if (err?.response?.data?.message) return showError(`${err.response.data.message}`);
                }
           }
      };
      const showError = (error) => (document.getElementById("validation-error").innerText = error);
      const validate = () => {
-          const { email, password } = store.getState().login;
           // return true;
           // email
           if (isEmpty(email)) {

@@ -7,60 +7,11 @@ import { isEmpty, isEmail, isMobilePhone, isStrongPassword } from "validator";
 import { useNavigate } from "react-router-dom";
 import { GlobalStyles } from "../../GlobalStyles";
 import Input from "./Input";
-import Slider from "./Slider";
 import Otp from "./Otp";
 import { useSelector } from "react-redux";
 
-export const Form = styled.form`
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-     justify-content: center;
-     gap: 1rem;
-     width: clamp(300px, 25%, 1920px);
-     margin: 1rem auto;
-`;
-
-export const SubmitButton = styled.button`
-     width: clamp(250px, 100%, 900px);
-     border-radius: 10px;
-     border: none;
-     outline: none;
-     padding: 0.5rem;
-     font-size: 16px;
-     font-weight: bold;
-     cursor: pointer;
-     background-color: ${GlobalStyles.themeSemiLight};
-     color: ${GlobalStyles.themeFont};
-`;
-
-const ClientType = styled.div`
-     display: flex;
-     justify-content: center;
-     gap: 1rem;
-     margin-bottom: 1rem;
-`;
-
-const ClientTypeOptions = styled.label`
-     font-size: 16px;
-     transition: opacity 500ms;
-`;
-
-export const Heading = styled.h1`
-     text-align: center;
-     margin-block: 1rem;
-     font-size: 30px;
-     min-width: 300px;
-`;
-
-export const Errors = styled.p`
-     color: orange;
-     text-align: center;
-     font-size: 16px;
-     min-width: 300px;
-`;
-
 const Register = () => {
+     // console.log(GlobalStyles.themeSemiDark.split(/\(|\)/));
      const navigate = useNavigate();
      const role = useSelector((state) => state.register.role);
      const name = useSelector((state) => state.register.name);
@@ -69,33 +20,27 @@ const Register = () => {
      const password = useSelector((state) => state.register.password);
      const [otpBoxShown, setOtpBoxShown] = useState(false);
 
-     const handleClientTypeChange = (e) => {
-          store.dispatch({
-               type: ACTIONS.REGISTER_ROLE_UPDATED,
-               payload: { role: e.target.checked ? "owner" : "tenant" },
-          });
-     };
      const handleNameChange = (e) => {
           store.dispatch({
-               type: ACTIONS.REGISTER_NAME_UPDATED,
+               type: ACTIONS.REGISTER.NAME_UPDATED,
                payload: { name: e.target.value },
           });
      };
      const handleEmailChange = (e) => {
           store.dispatch({
-               type: ACTIONS.REGISTER_EMAIL_UPDATED,
+               type: ACTIONS.REGISTER.EMAIL_UPDATED,
                payload: { email: e.target.value },
           });
      };
      const handlePhoneNumberChange = (e) => {
           store.dispatch({
-               type: ACTIONS.REGISTER_PHONE_NUMBER_UPDATED,
+               type: ACTIONS.REGISTER.PHONE_NUMBER_UPDATED,
                payload: { phoneNumber: e.target.value },
           });
      };
      const handlePasswordChange = (e) => {
           store.dispatch({
-               type: ACTIONS.REGISTER_PASSWORD_UPDATED,
+               type: ACTIONS.REGISTER.PASSWORD_UPDATED,
                payload: { password: e.target.value },
           });
      };
@@ -103,7 +48,6 @@ const Register = () => {
      const handleRegisterSubmit = async (e) => {
           e.preventDefault();
           if (validate()) {
-               // if (false) {
                // submit the form
                try {
                     const { status } = await Axios.post("http://localhost:3001/register", {
@@ -116,17 +60,19 @@ const Register = () => {
 
                     if (status === 201 || status === 200) {
                          // display OTP div
-                         setOtpBoxShown(true);
+                         // setOtpBoxShown(true);
+                         navigate("/login");
                     }
                } catch (err) {
-                    console.log(err.message);
-                    const { message } = err.response.data;
-                    if (message.code === 11000) {
+                    if (err?.message === "Network Error") return showError("Couldn't connect to server. Please try again later.");
+
+                    const { message } = err?.response?.data;
+                    if (message?.code === 11000) {
                          const value = message.keyValue[Object.keys(message.keyValue)];
-                         showError(`${value} is already registered.`);
-                    } else if (message.errors) {
+                         return showError(`${value} is already registered.`);
+                    } else if (message?.errors) {
                          const field = Object.keys(message.errors)[0];
-                         showError(`${message.errors[field].message}`);
+                         return showError(`${message.errors[field].message}`);
                     }
                }
           }
@@ -194,12 +140,6 @@ const Register = () => {
                <Heading>Register</Heading>
 
                <Form>
-                    <ClientType>
-                         <ClientTypeOptions style={{ opacity: `${role === "tenant" ? 1 : 0.5}` }}>I need a space</ClientTypeOptions>
-                         <Slider name="clientType" id="clientType" checked={role === "owner" ? true : false} onChange={handleClientTypeChange} />
-                         <ClientTypeOptions style={{ opacity: `${role === "owner" ? 1 : 0.5}` }}>I own a space</ClientTypeOptions>
-                    </ClientType>
-
                     <Input id="name" type="text" value={name} name="name" onChange={handleNameChange} placeholder="Name" required="true" minLength="1" maxLength="100" />
                     <Input id="email" type="email" value={email} name="email" onChange={handleEmailChange} placeholder="Email" required="true" minLength="5" maxLength="100" />
                     <Input
@@ -226,3 +166,61 @@ const Register = () => {
 };
 
 export default Register;
+
+export const Form = styled.form`
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     gap: 1rem;
+     width: clamp(300px, 25%, 1920px);
+     margin: 1rem auto;
+
+     /* used in tenant creation */
+     select {
+          border-radius: 10px;
+          outline: none;
+          border: none;
+          padding: 0.5rem;
+          font-size: 1rem;
+          width: clamp(250px, 100%, 900px);
+          color: black;
+          background-color: ${GlobalStyles.themeFont};
+
+          option {
+               color: black;
+          }
+     }
+`;
+
+export const SubmitButton = styled.button`
+     width: clamp(250px, 100%, 900px);
+     border-radius: 10px;
+     border: none;
+     outline: none;
+     padding: 0.5rem;
+     font-size: 1rem;
+     font-weight: bold;
+     cursor: pointer;
+     background-color: ${GlobalStyles.themeSemiLight};
+     color: ${GlobalStyles.themeFont};
+     transition: filter 150ms;
+
+     :hover {
+          filter: brightness(0.75);
+     }
+`;
+
+export const Heading = styled.h1`
+     text-align: center;
+     margin-block: 1rem;
+     font-size: 2rem;
+     min-width: 300px;
+`;
+
+export const Errors = styled.p`
+     color: orange;
+     text-align: center;
+     font-size: 1rem;
+     min-width: 300px;
+`;

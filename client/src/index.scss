@@ -3,8 +3,10 @@
 // Color Palette
 $theme-dark : rgb(31, 29, 54);
 $theme-semi-dark : rgb(63, 51, 81);
-$theme-semi-light : rgb(134, 72, 121);
-$theme-font : rgb(233, 166, 166);
+// $theme-semi-light : rgb(134, 72, 121);
+$theme-semi-light : hotpink;
+// $theme-font : rgb(233, 166, 166);
+$theme-font : white;
 
 *, *::before, *::after {
      box-sizing: border-box;
@@ -15,6 +17,34 @@ $theme-font : rgb(233, 166, 166);
 }
 
 body, html {
-     font-size: 24px;
+     font-size: 16px;
      background-color: $theme-semi-dark;
+}
+
+.btn {
+     padding: 0.5em 1em;
+     outline: none;
+     border-radius: 10px;
+     border: none;
+     cursor: pointer;
+}
+
+::-webkit-scrollbar {
+     height: 7px;
+     width: 7px;
+}
+
+::-webkit-scrollbar-track {
+     border-radius: 1em;
+     background-color: $theme-font;
+}
+
+::-webkit-scrollbar-thumb {
+     border-radius: 1em;
+     background-color: $theme-semi-light;
+}
+::-webkit-scrollbar-thumb:hover {
+     border-radius: 1em;
+     background-color: #b05f87;
+     outline: 1px solid slategrey;
 }

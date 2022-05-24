@@ -9,7 +9,36 @@
 }
 
 body, html {
-  font-size: 24px;
+  font-size: 16px;
   background-color: #3f3351;
+}
+
+.btn {
+  padding: 0.5em 1em;
+  outline: none;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  height: 7px;
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 1em;
+  background-color: white;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 1em;
+  background-color: hotpink;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  border-radius: 1em;
+  background-color: #b05f87;
+  outline: 1px solid slategrey;
 }
 /*# sourceMappingURL=index.css.map */

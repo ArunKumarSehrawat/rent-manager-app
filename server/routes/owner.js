@@ -1,4 +1,12 @@
-const express = require("express");
-const router = express.Router();
+import express from "express";
+export const ownerRouter = express.Router();
 
-module.exports = router;
+import { getAllYears, deleteAllYears, getOneYear, createOneYear, deleteOneYear, updateOneYear } from "../controller/owner.js";
+import { isUserAuthorized } from "../controller/middlewares.js";
+
+/**
+ * Base Route /owner
+ */
+
+ownerRouter.route("/years").get(isUserAuthorized, getAllYears).delete(isUserAuthorized, deleteAllYears);
+ownerRouter.route("/years/:year").get(isUserAuthorized, getOneYear).post(isUserAuthorized, createOneYear).delete(isUserAuthorized, deleteOneYear).patch(isUserAuthorized, updateOneYear);
